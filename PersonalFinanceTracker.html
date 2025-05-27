@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html ng-app="financeApp">
+<head>
+    <title>Personal Finance Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular-route.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-links {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #34495e;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .amount {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .amount.positive {
+            color: #27ae60;
+        }
+
+        .amount.negative {
+            color: #e74c3c;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recent-transactions {
+            margin-top: 2rem;
+        }
+
+        .transaction-list {
+            list-style: none;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body ng-controller="DashboardController">
+    <nav class="navbar">
+        <div class="nav-links">
+            <a href="#/dashboard">Dashboard</a>
+            <a href="#/expenses">Expenses</a>
+            <a href="#/income">Income</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Total Balance</span>
+                </div>
+                <div class="amount">$8,459.32</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Monthly Income</span>
+                </div>
+                <div class="amount positive">+$4,250.00</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Monthly Expenses</span>
+                </div>
+                <div class="amount negative">-$2,840.68</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="financeChart"></canvas>
+        </div>
+
+        <div class="card recent-transactions">
+            <div class="card-header">
+                <span class="card-title">Recent Transactions</span>
+            </div>
+            <ul class="transaction-list">
+                <li class="transaction-item">
+                    <span>Grocery Shopping</span>
+                    <span class="amount negative">-$156.32</span>
+                    <span class="transaction-date">Today</span>
+                </li>
+                <li class="transaction-item">
+                    <span>Salary Deposit</span>
+                    <span class="amount positive">+$3,500.00</span>
+                    <span class="transaction-date">Yesterday</span>
+                </li>
+                <li class="transaction-item">
+                    <span>Utilities</span>
+                    <span class="amount negative">-$245.00</span>
+                    <span class="transaction-date">Feb 1, 2025</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('financeApp', ['ngRoute']);
+
+        app.config(function($routeProvider) {
+            $routeProvider
+                .when('/dashboard', {
+                    templateUrl: 'dashboard.html',
+                    controller: 'DashboardController'
+                })
+                .when('/expenses', {
+                    templateUrl: 'expenses.html',
+                    controller: 'ExpensesController'
+                })
+                .when('/income', {
+                    templateUrl: 'income.html',
+                    controller: 'IncomeController'
+                })
+                .otherwise({
+                    redirectTo: '/dashboard'
+                });
+        });
+
+        app.controller('DashboardController', function($scope) {
+            // Initialize chart
+            var ctx = document.getElementById('financeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Income',
+                        data: [4200, 4250, 4300, 4250, 4400, 4250],
+                        borderColor: '#27ae60',
+                        fill: false
+                    }, {
+                        label: 'Expenses',
+                        data: [2800, 2950, 2750, 2840, 2900, 2840],
+                        borderColor: '#e74c3c',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

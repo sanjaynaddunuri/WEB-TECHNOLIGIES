@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="weatherApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="weatherController as vm">
+  <div>
+    <h1>Weather Dashboard</h1>
+    <div>
+      <input type="text" ng-model="vm.city" placeholder="Enter city name">
+      <button ng-click="vm.getWeather()">Get Weather</button>
+    </div>
+    <div ng-if="vm.error">
+      {{ vm.error }}
+    </div>
+    <div ng-if="vm.weather">
+      <div>
+        <h2>{{ vm.weather.name }}, {{ vm.weather.sys.country }}</h2>
+        <p><strong>Temperature:</strong> {{ vm.weather.main.temp }}°C</p>
+        <p><strong>Humidity:</strong> {{ vm.weather.main.humidity }}%</p>
+        <p><strong>Conditions:</strong> {{ vm.weather.weather[0].description }}</p>
+        <button ng-click="vm.addToFavorites()">Add to Favorites</button>
+      </div>
+    </div>
+    <div ng-if="vm.favorites.length > 0">
+      <h2>Favorite Cities</h2>
+      <ul>
+        <li ng-repeat="city in vm.favorites | orderBy">
+          <button ng-click="vm.getWeather(city)">{{ city }}</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    angular.module('weatherApp', [])
+      .controller('weatherController', function ($http) {
+        const vm = this;
+        vm.city = '';
+        vm.weather = null;
+        vm.error = '';
+        vm.favorites = [];
+
+        vm.getWeather = function (city) {
+          const apiKey = '628d0e98f6808e5cf2756fbaee2dc0b2';
+          const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city || vm.city}&appid=${apiKey}&units=metric`;
+
+          $http.get(apiUrl)
+            .then(function (response) {
+              vm.weather = response.data;
+              vm.error = '';
+            })
+            .catch(function (error) {
+              vm.weather = null;
+              vm.error = 'City not found or API error. Please try again.';
+            });
+        };
+
+        vm.addToFavorites = function () {
+          if (vm.weather && !vm.favorites.includes(vm.weather.name)) {
+            vm.favorites.push(vm.weather.name);
+          }
+        };
+      });
+  </script>
+</body>
+</html>
