@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS studentDB;
+
+USE studentDB;
+
+CREATE TABLE IF NOT EXISTS Students (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Age INT,
+    Major VARCHAR(100)
+);
+
+INSERT INTO Students (ID, Name, Age, Major) VALUES
+(101, 'Alice', 20, 'Computer Science'),
+(102, 'Bob', 22, 'Data Science'),
+(103, 'Charlie', 21, 'Electrical Engineering');
