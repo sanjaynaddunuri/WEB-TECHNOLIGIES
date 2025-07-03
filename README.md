@@ -1,5 +1,4 @@
-# 🌐 Web Technologies Portfolio — Full Stack Projects
-
+# 🌐 Web Technologies
 [![GitHub Stars](https://img.shields.io/github/stars/sanjaygithub/web-tech-projects?style=social)](https://github.com/sanjaygithub/web-tech-projects/stargazers)
 [![Forks](https://img.shields.io/github/forks/sanjaygithub/web-tech-projects?style=social)](https://github.com/sanjaygithub/web-tech-projects/forks)
 [![Languages](https://img.shields.io/github/languages/top/sanjaygithub/web-tech-projects?color=blue)](https://github.com/sanjaygithub/web-tech-projects)
